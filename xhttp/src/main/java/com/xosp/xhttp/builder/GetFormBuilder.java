@@ -12,7 +12,7 @@ import com.xosp.xhttp.request.VolleyRequest;
  * Date: 2018/6/22
  * Description:
  */
-public class GetFormBuilder<T> extends RequestBuilder<T, GetFormBuilder> {
+public class GetFormBuilder<T> extends RequestBuilder<T, GetFormBuilder<T>> {
 
     @Override
     public Request<VolleyResult<T>> build() {

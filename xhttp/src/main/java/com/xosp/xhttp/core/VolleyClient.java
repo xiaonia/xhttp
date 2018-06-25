@@ -6,6 +6,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.NoCache;
+import com.xosp.xhttp.bean.VolleyResult;
 import com.xosp.xhttp.builder.GetFormBuilder;
 import com.xosp.xhttp.builder.PostFormBuilder;
 import com.xosp.xhttp.builder.PostJsonBuilder;
@@ -71,34 +72,37 @@ public class VolleyClient {
 
     public <T> void getForm(Object tag, String url, Map<String, String> headers, Map<String, String> params,
                         VolleyCallback<T> callback) {
-        Request<T> request = new GetFormBuilder<T>()
+        final Request<VolleyResult<T>> request = new GetFormBuilder<T>()
                 .setRequestTag(tag)
                 .setRequestUrl(url)
                 .setHeaders(headers)
                 .setParams(params)
                 .setRequestCallback(callback)
-                .request();
+                .build();
+        this.request(request);
     }
 
-    public void postForm(Object tag, String url, Map<String, String> headers, Map<String, String> params,
-                         VolleyCallback<?> callback) {
-        Request<?> request = new PostFormBuilder<>()
+    public <T> void postForm(Object tag, String url, Map<String, String> headers, Map<String, String> params,
+                         VolleyCallback<T> callback) {
+        final Request<VolleyResult<T>> request = new PostFormBuilder<T>()
                 .setRequestTag(tag)
                 .setRequestUrl(url)
                 .setHeaders(headers)
                 .setParams(params)
                 .setRequestCallback(callback)
-                .request();
+                .build();
+        this.request(request);
     }
 
-    public void postJson(Object tag, String url, Map<String, String> headers, String json, VolleyCallback<?> callback) {
-        Request request = new PostJsonBuilder()
+    public <T> void postJson(Object tag, String url, Map<String, String> headers, String json, VolleyCallback<T> callback) {
+        final Request<VolleyResult<T>> request = new PostJsonBuilder<T>()
                 .setRequestTag(tag)
                 .setRequestUrl(url)
                 .setHeaders(headers)
                 .setRequestBody(json)
                 .setRequestCallback(callback)
-                .request();
+                .build();
+        this.request(request);
     }
 
 }

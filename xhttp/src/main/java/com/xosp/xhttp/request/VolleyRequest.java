@@ -94,7 +94,9 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
         try {
             final Class<T> resultClass = getResultClass();
             if (resultClass == null) {
-                return Response.error(new ParseError(response));
+                return Response.success(new VolleyResult<T>(response, null),
+                        HttpHeaderParser.parseCacheHeaders(response));
+                //return Response.error(new ParseError(response));
             }
 
             T result = null;

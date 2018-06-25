@@ -35,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .setRequestUrl(url)
                     .setHeaders(null)
                     .setParams(null)
-                    .setResultClass(null)
-                    .setRequestCallback(new VolleyCallback<String>() {
+                    .setResultClass(String.class)
+                    .setRequestCallback(new DefaultVolleyCallback(null) {
                         @Override
                         public void onResponse(VolleyResult<String> response) {
                             Log.e(TAG, "on success");
@@ -52,22 +52,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    static abstract class DefaultVolleyCallback<T> implements VolleyCallback<T> {
+    static abstract class DefaultVolleyCallback implements VolleyCallback<String> {
 
-        private VolleyCallback<T> callback;
+        private VolleyCallback<String> callback;
 
-        public DefaultVolleyCallback(VolleyCallback<T> callback) {
+        public DefaultVolleyCallback(VolleyCallback<String> callback) {
             this.callback = callback;
         }
 
         @Override
         public void onErrorResponse(VolleyError error) {
-            this.callback.onErrorResponse(error);
+            if (this.callback != null) {
+                this.callback.onErrorResponse(error);
+            }
         }
 
         @Override
-        public void onResponse(VolleyResult<T> response) {
-            this.callback.onResponse(response);
+        public void onResponse(VolleyResult<String> response) {
+            if (this.callback != null) {
+                this.callback.onResponse(response);
+            }
         }
     }
 

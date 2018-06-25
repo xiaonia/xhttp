@@ -71,8 +71,8 @@ public abstract class RequestBuilder<T, R extends RequestBuilder> {
     }
 
     @SuppressWarnings("unchecked")
-    public R setRequestCallback(VolleyCallback callback) {
-        this.callback = callback;
+    public R setRequestCallback(VolleyCallback<? extends T> callback) {
+        this.callback = (VolleyCallback<T>) callback;
         return (R) this;
     }
 
@@ -83,8 +83,8 @@ public abstract class RequestBuilder<T, R extends RequestBuilder> {
     }
 
     @SuppressWarnings("unchecked")
-    public R setResultClass(Class clazz) {
-        this.clazz = clazz;
+    public R setResultClass(Class<? extends T> clazz) {
+        this.clazz = (Class<T>) clazz;
         return (R) this;
     }
 
