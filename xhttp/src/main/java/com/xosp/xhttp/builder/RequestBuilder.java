@@ -22,6 +22,10 @@ public abstract class RequestBuilder<T, R extends RequestBuilder> {
     protected VolleyCallback<T> callback;
     protected Class<T> clazz;
 
+    public RequestBuilder() {
+
+    }
+
     public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;
     }

@@ -14,6 +14,10 @@ import com.xosp.xhttp.request.VolleyRequest;
  */
 public class GetFormBuilder<T> extends RequestBuilder<T, GetFormBuilder<T>> {
 
+    public GetFormBuilder() {
+        super();
+    }
+
     public GetFormBuilder(Class<T> clazz) {
         super(clazz);
     }

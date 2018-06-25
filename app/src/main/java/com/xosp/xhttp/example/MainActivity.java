@@ -1,9 +1,11 @@
 package com.xosp.xhttp.example;
 
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.VolleyError;
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final String TAG = "MainActivity";
 
     private TextView mTvTest;
+    private ImageView mIvTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,20 +28,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mTvTest = findViewById(R.id.tv_test);
         mTvTest.setOnClickListener(this);
+        mIvTest = findViewById(R.id.iv_test);
     }
 
     @Override
     public void onClick(View v) {
         if (v == mTvTest) {
-            String url = "https://www.m.baidu.com";
-            new PostFormBuilder<>(String.class)
+            //String url = "https://www.m.baidu.com";
+            String url = "https://www.baidu.com/img/bd_logo1.png";
+            new PostFormBuilder<>(Bitmap.class)
                     .setRequestUrl(url)
                     .setHeaders(null)
                     .setParams(null)
-                    .setRequestCallback(new VolleyCallback<String>() {
+                    .setRequestCallback(new VolleyCallback<Bitmap>() {
                         @Override
-                        public void onResponse(VolleyResult<String> response) {
+                        public void onResponse(VolleyResult<Bitmap> response) {
                             Log.e(TAG, "on success");
+                            mIvTest.setImageBitmap(response.getResponseData());
                         }
 
                         @Override

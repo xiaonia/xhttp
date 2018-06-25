@@ -14,6 +14,10 @@ import com.xosp.xhttp.request.VolleyRequest;
  */
 public class PostFormBuilder<T> extends RequestBuilder<T, PostFormBuilder<T>> {
 
+    public PostFormBuilder() {
+        super();
+    }
+
     public PostFormBuilder(Class<T> clazz) {
         super(clazz);
     }
