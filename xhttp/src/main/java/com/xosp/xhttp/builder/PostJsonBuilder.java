@@ -31,7 +31,7 @@ public class PostJsonBuilder<T> extends RequestBuilder<T, PostJsonBuilder<T>> {
         request.setRequestId(id);
         request.setHeaderMap(headers);
         request.setParamMap(params);
-        request.setRequestBody(body);
+        request.setStringBody(body);
         request.setReturnType(clazz);
         return request;
     }

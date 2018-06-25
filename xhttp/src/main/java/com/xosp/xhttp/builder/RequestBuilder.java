@@ -17,6 +17,7 @@ public abstract class RequestBuilder<T, R extends RequestBuilder> {
     protected String url;
     protected Map<String, String> headers;
     protected Map<String, String> params;
+    protected Map<String, String> files;
     protected String body;
 
     protected VolleyCallback<T> callback;
@@ -75,6 +76,21 @@ public abstract class RequestBuilder<T, R extends RequestBuilder> {
             this.params = new LinkedHashMap<String, String>();
         }
         this.params.put(key, val);
+        return (R) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public R setFiles(Map<String, String> params) {
+        this.files = params;
+        return (R) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public R addFiles(String key, String val) {
+        if (this.files == null) {
+            this.files = new LinkedHashMap<String, String>();
+        }
+        this.files.put(key, val);
         return (R) this;
     }
 

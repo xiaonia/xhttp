@@ -2,14 +2,12 @@ package com.xosp.xhttp.request;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.Nullable;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
@@ -18,10 +16,8 @@ import com.xosp.xhttp.bean.VolleyResult;
 import com.xosp.xhttp.constant.HeaderConstants;
 import com.xosp.xhttp.constant.VolleyConstants;
 import com.xosp.xhttp.inter.VolleyCallback;
-import com.xosp.xhttp.utils.GenericClassHelper;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,58 +27,24 @@ import java.util.Map;
  * Description: class for custom network requests.
  */
 @SuppressWarnings({"WeakerAccess"})
-public class VolleyRequest<T> extends Request<VolleyResult<T>> {
+public class VolleyRequest<T> extends BasicRequest<T> {
 
-    /** Lock to guard mListener as it is cleared on cancel() and read on delivery. */
-    protected final Object mLock = new Object();
-
-    protected Class<T> mReturnType;
-    protected String mContentType;
-    protected final Map<String, String> mHeaderMap;
-    protected final Map<String, String> mParamMap;
-    protected String mRequestBody;
-
-    protected String mRequestId;
-    protected VolleyCallback<T> mCallback;
+    protected String mStringBody;
 
     public VolleyRequest(int method, String url, VolleyCallback<T> callback) {
         super(method, url, callback);
-        mCallback = callback;
-        mHeaderMap = new HashMap<String, String>();
-        mParamMap = new HashMap<String, String>();
-    }
-
-    @Override
-    protected Map<String, String> getParams() throws AuthFailureError {
-        return getParamMap();
-    }
-
-    @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        return getHeaderMap();
-    }
-
-    @Override
-    public String getBodyContentType() {
-        if (mContentType != null) {
-            return mContentType;
-        }
-        return super.getBodyContentType();
     }
 
     @Override
     public byte[] getBody() throws AuthFailureError {
-        final byte[] bytes = getRequestBody();
-        if (bytes != null) {
-            return bytes;
-        }
-        return super.getBody();
+        byte[] bytes = getStringBody();
+        return bytes != null? bytes : super.getBody();
     }
 
-    protected byte[] getRequestBody() {
-        if (mRequestBody != null) {
+    protected byte[] getStringBody() {
+        if (mStringBody != null) {
             try {
-                return mRequestBody.getBytes(VolleyConstants.DEFAULT_CHARSET);
+                return mStringBody.getBytes(VolleyConstants.DEFAULT_CHARSET);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -94,6 +56,7 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
     @Override
     protected Response<VolleyResult<T>> parseNetworkResponse(NetworkResponse response) {
         try {
+            //parse response media type
             String media = null;
             final Map<String, String> headers = response.headers;
             if (headers != null) {
@@ -108,14 +71,13 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
 
             final Class<T> resultClass = getResultClass();
             if (resultClass == null) {
-                //*
                 return Response.success(new VolleyResult<T>(response, null),
-                        HttpHeaderParser.parseCacheHeaders(response)); //*/
+                        HttpHeaderParser.parseCacheHeaders(response));
                 //return Response.error(new ParseError(response));
             }
 
             T result = null;
-            if (Bitmap.class.isAssignableFrom(resultClass)) {
+            if (Bitmap.class.equals(resultClass)) {
                 if (MediaType.IMAGE_TYPE.equals(media)) {
                     Bitmap bitmap = BitmapFactory
                             .decodeByteArray(response.data, 0, response.data.length);
@@ -126,10 +88,10 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
             } else {
                 String jsonString = new String(response.data,
                         HttpHeaderParser.parseCharset(response.headers, VolleyConstants.DEFAULT_CHARSET));
-                if (String.class.isAssignableFrom(resultClass)
-                        || Object.class.equals(resultClass)) { //Object.class 默认返回String
+
+                if (String.class.equals(resultClass) || Object.class.equals(resultClass)) { //Object.class 默认返回String
                     result = (T) jsonString;
-                } else if (JSONObject.class.isAssignableFrom(resultClass)) {
+                } else if (JSONObject.class.equals(resultClass)) {
                     JSONObject jsonObject = JSON.parseObject(jsonString);
                     if (jsonObject != null) {
                         result = (T) jsonObject;
@@ -161,75 +123,12 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
     }
 
     @Override
-    protected void deliverResponse(VolleyResult<T> response) {
-        Response.Listener<VolleyResult<T>> listener;
-        synchronized (mLock) {
-            listener = mCallback;
-        }
-        if (listener != null) {
-            listener.onResponse(response);
-        }
-    }
-
-    @Override
-    public void deliverError(VolleyError error) {
-        super.deliverError(error);
-    }
-
-    @Override
     public void cancel() {
         super.cancel();
-        synchronized (mLock) {
-            this.mCallback = null;
-        }
-        //TODO
     }
 
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public Class<T> getResultClass() {
-        if (mReturnType == null && mCallback != null) {
-            mReturnType = GenericClassHelper.getGenericClass(mCallback, VolleyCallback.class);
-        }
-        return mReturnType;
-    }
-
-    public Map<String, String> getHeaderMap() {
-        return mHeaderMap;
-    }
-
-    public void setHeaderMap(Map<String, String> headerMap) {
-        this.mHeaderMap.clear();
-        if (headerMap != null) {
-            this.mHeaderMap.putAll(headerMap);
-        }
-    }
-
-    public Map<String, String> getParamMap() {
-        return mParamMap;
-    }
-
-    public void setParamMap(Map<String, String> paramMap) {
-        this.mParamMap.clear();
-        if (paramMap != null) {
-            this.mParamMap.putAll(paramMap);
-        }
-    }
-
-    public void setContentType(String contentType) {
-        this.mContentType = contentType;
-    }
-
-    public void setRequestBody(String requestBody) {
-        this.mRequestBody = requestBody;
-    }
-
-    public void setRequestId(String requestId) {
-        this.mRequestId = requestId;
-    }
-
-    public void setReturnType(Class<T> returnType) {
-        this.mReturnType = returnType;
+    public void setStringBody(String stringBody) {
+        this.mStringBody = stringBody;
     }
 
 }
