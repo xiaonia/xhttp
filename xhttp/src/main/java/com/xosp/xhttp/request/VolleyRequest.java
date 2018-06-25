@@ -13,9 +13,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.xosp.xhttp.bean.MediaType;
 import com.xosp.xhttp.bean.VolleyResult;
 import com.xosp.xhttp.constant.HeaderConstants;
-import com.xosp.xhttp.constant.MediaTypeConstants;
 import com.xosp.xhttp.constant.VolleyConstants;
 import com.xosp.xhttp.inter.VolleyCallback;
 import com.xosp.xhttp.utils.GenericClassHelper;
@@ -94,30 +94,40 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
     @Override
     protected Response<VolleyResult<T>> parseNetworkResponse(NetworkResponse response) {
         try {
-            String contentType = null;
+            String media = null;
             final Map<String, String> headers = response.headers;
             if (headers != null) {
-                contentType = headers.get(HeaderConstants.HEAD_KEY_CONTENT_TYPE);
+                String contentType = headers.get(HeaderConstants.HEAD_KEY_CONTENT_TYPE);
+                if (contentType != null) {
+                    MediaType mediaType = MediaType.parse(contentType);
+                    if (mediaType != null) {
+                        media = mediaType.type();
+                    }
+                }
             }
 
             final Class<T> resultClass = getResultClass();
             if (resultClass == null) {
+                //*
                 return Response.success(new VolleyResult<T>(response, null),
-                        HttpHeaderParser.parseCacheHeaders(response));
+                        HttpHeaderParser.parseCacheHeaders(response)); //*/
                 //return Response.error(new ParseError(response));
             }
 
             T result = null;
             if (Bitmap.class.isAssignableFrom(resultClass)) {
-                Bitmap bitmap =
-                        BitmapFactory.decodeByteArray(response.data, 0, response.data.length);
-                if (bitmap != null) {
-                    result = (T) bitmap;
+                if (MediaType.IMAGE_TYPE.equals(media)) {
+                    Bitmap bitmap = BitmapFactory
+                            .decodeByteArray(response.data, 0, response.data.length);
+                    if (bitmap != null) {
+                        result = (T) bitmap;
+                    }
                 }
             } else {
                 String jsonString = new String(response.data,
                         HttpHeaderParser.parseCharset(response.headers, VolleyConstants.DEFAULT_CHARSET));
-                if (String.class.isAssignableFrom(resultClass)) {
+                if (String.class.isAssignableFrom(resultClass)
+                        || Object.class.equals(resultClass)) { //Object.class 默认返回String
                     result = (T) jsonString;
                 } else if (JSONObject.class.isAssignableFrom(resultClass)) {
                     JSONObject jsonObject = JSON.parseObject(jsonString);
