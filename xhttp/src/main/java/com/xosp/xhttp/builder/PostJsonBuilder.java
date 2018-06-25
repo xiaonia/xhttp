@@ -13,6 +13,10 @@ import com.xosp.xhttp.request.VolleyRequest;
  */
 public class PostJsonBuilder<T> extends RequestBuilder<T, PostJsonBuilder<T>> {
 
+    public PostJsonBuilder(Class<T> clazz) {
+        super(clazz);
+    }
+
     @Override
     public Request<VolleyResult<T>> build() {
         final VolleyRequest<T> request =

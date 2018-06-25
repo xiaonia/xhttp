@@ -14,6 +14,10 @@ import com.xosp.xhttp.request.VolleyRequest;
  */
 public class PostFormBuilder<T> extends RequestBuilder<T, PostFormBuilder<T>> {
 
+    public PostFormBuilder(Class<T> clazz) {
+        super(clazz);
+    }
+
     @Override
     public Request<VolleyResult<T>> build() {
         String getUrl = VolleyHelper.buildHttpUrl(url, params, VolleyConstants.DEFAULT_CHARSET);

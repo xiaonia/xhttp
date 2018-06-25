@@ -22,6 +22,10 @@ public abstract class RequestBuilder<T, R extends RequestBuilder> {
     protected VolleyCallback<T> callback;
     protected Class<T> clazz;
 
+    public RequestBuilder(Class<T> clazz) {
+        this.clazz = clazz;
+    }
+
     @SuppressWarnings("unchecked")
     public R setRequestId(String id) {
         this.id = id;

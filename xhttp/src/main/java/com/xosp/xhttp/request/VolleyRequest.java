@@ -14,6 +14,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.xosp.xhttp.bean.VolleyResult;
+import com.xosp.xhttp.constant.HeaderConstants;
+import com.xosp.xhttp.constant.MediaTypeConstants;
 import com.xosp.xhttp.constant.VolleyConstants;
 import com.xosp.xhttp.inter.VolleyCallback;
 import com.xosp.xhttp.utils.GenericClassHelper;
@@ -92,6 +94,12 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
     @Override
     protected Response<VolleyResult<T>> parseNetworkResponse(NetworkResponse response) {
         try {
+            String contentType = null;
+            final Map<String, String> headers = response.headers;
+            if (headers != null) {
+                contentType = headers.get(HeaderConstants.HEAD_KEY_CONTENT_TYPE);
+            }
+
             final Class<T> resultClass = getResultClass();
             if (resultClass == null) {
                 return Response.success(new VolleyResult<T>(response, null),

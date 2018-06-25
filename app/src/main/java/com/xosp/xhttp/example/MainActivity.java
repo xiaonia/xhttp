@@ -31,12 +31,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v == mTvTest) {
             String url = "https://www.m.baidu.com";
-            new PostFormBuilder<>()
+            new PostFormBuilder<>(String.class)
                     .setRequestUrl(url)
                     .setHeaders(null)
                     .setParams(null)
-                    .setResultClass(String.class)
-                    .setRequestCallback(new DefaultVolleyCallback(null) {
+                    .setRequestCallback(new VolleyCallback<String>() {
                         @Override
                         public void onResponse(VolleyResult<String> response) {
                             Log.e(TAG, "on success");
@@ -52,11 +51,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    static abstract class DefaultVolleyCallback implements VolleyCallback<String> {
+    static abstract class DefaultVolleyCallback<T> implements VolleyCallback<T> {
 
-        private VolleyCallback<String> callback;
+        private VolleyCallback<T> callback;
 
-        public DefaultVolleyCallback(VolleyCallback<String> callback) {
+        public DefaultVolleyCallback(VolleyCallback<T> callback) {
             this.callback = callback;
         }
 
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         @Override
-        public void onResponse(VolleyResult<String> response) {
+        public void onResponse(VolleyResult<T> response) {
             if (this.callback != null) {
                 this.callback.onResponse(response);
             }
