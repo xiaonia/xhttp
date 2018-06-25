@@ -14,12 +14,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.xosp.xhttp.bean.VolleyResult;
-import com.xosp.xhttp.inter.VolleyCallback;
 import com.xosp.xhttp.constant.VolleyConstants;
+import com.xosp.xhttp.inter.VolleyCallback;
+import com.xosp.xhttp.utils.GenericClassHelper;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -169,44 +168,9 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
     @SuppressWarnings("unchecked")
     @Nullable
     public Class<T> getResultClass() {
-        //如果mCallback是匿名内部类，则可以通过此方法获取泛型参数
         if (mReturnType == null && mCallback != null) {
-            try {
-                Type type = mCallback.getClass().getGenericSuperclass();
-                if (type instanceof ParameterizedType) {
-                    ParameterizedType paramType = (ParameterizedType) type;
-                    Type rawType = paramType.getRawType();
-                    if (VolleyCallback.class.isAssignableFrom((Class<?>) rawType)) {
-                        Type[] types = paramType.getActualTypeArguments();
-                        if (types != null && types.length > 0) {
-                            mReturnType = (Class<T>) types[0];
-                            return mReturnType;
-                        }
-                    }
-                }
-
-                Type[] interfaces = mCallback.getClass().getGenericInterfaces();
-                if (interfaces != null && interfaces.length > 0) {
-                    for (int i = 0; i < interfaces.length; i++) {
-                        type = interfaces[i];
-                        if (type instanceof ParameterizedType) {
-                            ParameterizedType paramType = (ParameterizedType) type;
-                            Type rawType = paramType.getRawType();
-                            if (VolleyCallback.class.isAssignableFrom((Class<?>) rawType)) {
-                                Type[] types = paramType.getActualTypeArguments();
-                                if (types != null && types.length > 0) {
-                                    mReturnType = (Class<T>) types[0];
-                                    return mReturnType;
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mReturnType = GenericClassHelper.getGenericClass(mCallback, VolleyCallback.class);
         }
-
         return mReturnType;
     }
 

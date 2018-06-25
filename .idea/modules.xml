@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/XHttp.iml" filepath="$PROJECT_DIR$/XHttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/xhttp/xhttp.iml" filepath="$PROJECT_DIR$/xhttp/xhttp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xhttp.iml" filepath="$PROJECT_DIR$/xhttp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/xhttp/xhttp-xhttp.iml" filepath="$PROJECT_DIR$/xhttp/xhttp-xhttp.iml" />
     </modules>
   </component>
 </project>
