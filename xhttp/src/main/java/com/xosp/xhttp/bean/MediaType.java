@@ -6,7 +6,11 @@ import java.nio.charset.Charset;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+/**
+ * use {@link com.google.common.net.MediaType } instead.
+ */
+//*
+@Deprecated
 public class MediaType {
 
     public static final String CHARSET_ATTRIBUTE = "charset";
@@ -113,3 +117,5 @@ public class MediaType {
     }
 
 }
+
+// */

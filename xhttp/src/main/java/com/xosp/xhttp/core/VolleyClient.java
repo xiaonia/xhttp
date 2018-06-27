@@ -12,7 +12,7 @@ import com.xosp.xhttp.builder.PostFormBuilder;
 import com.xosp.xhttp.builder.PostJsonBuilder;
 import com.xosp.xhttp.inter.VolleyCallback;
 import com.xosp.xhttp.stack.OkhttpStack;
-import com.xosp.xhttp.utils.HttpsUtils;
+import com.xosp.xhttp.utils.HttpsHelper;
 
 import java.util.Map;
 
@@ -35,7 +35,7 @@ public class VolleyClient {
         // Set up the network to use HttpURLConnection as the HTTP client.
         Network network = new BasicNetwork(
                 new OkhttpStack(null,
-                        HttpsUtils.getSslSocketFactory(null, null, null)));
+                        HttpsHelper.getSslSocketFactory(null, null, null)));
         // Instantiate the RequestQueue with the cache and network.
         mRequestQueue = new RequestQueue(cache, network);
         // Start the queue

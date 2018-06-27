@@ -20,7 +20,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
-public class HttpsUtils {
+public class HttpsHelper {
 
     public static SSLSocketFactory getSslSocketFactory(
             InputStream[] certificates, InputStream bksFile, String password) {

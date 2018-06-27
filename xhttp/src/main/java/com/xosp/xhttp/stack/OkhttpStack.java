@@ -8,6 +8,7 @@ import com.android.volley.Request;
 import com.android.volley.toolbox.BaseHttpStack;
 import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.HurlStack;
+import com.xosp.xhttp.utils.HeaderUtils;
 import com.xosp.xhttp.utils.VolleyHelper;
 
 import java.io.IOException;
@@ -39,6 +40,8 @@ import okhttp3.internal.http.HttpMethod;
  */
 public class OkhttpStack extends BaseHttpStack{
 
+    private static final int SOCKET_TIMEOUT_MILLS = 15000;
+
     private final HurlStack.UrlRewriter mUrlRewriter;
     @SuppressWarnings({"FieldCanBeLocal"})
     private final SSLSocketFactory mSslSocketFactory;
@@ -55,6 +58,7 @@ public class OkhttpStack extends BaseHttpStack{
     /**
      * @param urlRewriter Rewriter to use for request URLs
      */
+    @SuppressWarnings("WeakerAccess")
     public OkhttpStack(HurlStack.UrlRewriter urlRewriter) {
         this(urlRewriter, null);
     }
@@ -74,9 +78,9 @@ public class OkhttpStack extends BaseHttpStack{
         };
 
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        builder.connectTimeout(15, TimeUnit.SECONDS);
-        builder.readTimeout(15, TimeUnit.SECONDS);
-        builder.writeTimeout(15, TimeUnit.SECONDS);
+        builder.connectTimeout(SOCKET_TIMEOUT_MILLS, TimeUnit.SECONDS);
+        builder.readTimeout(SOCKET_TIMEOUT_MILLS, TimeUnit.SECONDS);
+        builder.writeTimeout(SOCKET_TIMEOUT_MILLS, TimeUnit.SECONDS);
         if (mSslSocketFactory != null) {
             builder.sslSocketFactory(mSslSocketFactory);
         }
@@ -142,8 +146,8 @@ public class OkhttpStack extends BaseHttpStack{
         }
 
         ResponseBody responseBody = okhttpResponse.body();
-        final List<Header> headers =
-                VolleyHelper.convertHeaders(okhttpResponse.headers().toMultimap());
+        final List<Header> headers = HeaderUtils.convertHeaders(
+                okhttpResponse.headers().toMultimap());
         if (responseBody != null) {
             final int contentLength = (int) responseBody.contentLength();
             final InputStream inputStream = responseBody.byteStream();

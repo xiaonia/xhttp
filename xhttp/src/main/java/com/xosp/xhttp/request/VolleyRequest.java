@@ -1,24 +1,17 @@
 package com.xosp.xhttp.request;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
-import com.xosp.xhttp.bean.MediaType;
 import com.xosp.xhttp.bean.VolleyResult;
-import com.xosp.xhttp.constant.HeaderConstants;
 import com.xosp.xhttp.constant.VolleyConstants;
 import com.xosp.xhttp.inter.VolleyCallback;
+import com.xosp.xhttp.utils.ResponseUtils;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 /**
  * Author: xuqingqi
@@ -56,19 +49,6 @@ public class VolleyRequest<T> extends BasicRequest<T> {
     @Override
     protected Response<VolleyResult<T>> parseNetworkResponse(NetworkResponse response) {
         try {
-            //parse response media type
-            String media = null;
-            final Map<String, String> headers = response.headers;
-            if (headers != null) {
-                String contentType = headers.get(HeaderConstants.HEAD_KEY_CONTENT_TYPE);
-                if (contentType != null) {
-                    MediaType mediaType = MediaType.parse(contentType);
-                    if (mediaType != null) {
-                        media = mediaType.type();
-                    }
-                }
-            }
-
             final Class<T> resultClass = getResultClass();
             if (resultClass == null) {
                 return Response.success(new VolleyResult<T>(response, null),
@@ -76,31 +56,7 @@ public class VolleyRequest<T> extends BasicRequest<T> {
                 //return Response.error(new ParseError(response));
             }
 
-            T result = null;
-            if (Bitmap.class.equals(resultClass)) {
-                if (MediaType.IMAGE_TYPE.equals(media)) {
-                    Bitmap bitmap = BitmapFactory
-                            .decodeByteArray(response.data, 0, response.data.length);
-                    if (bitmap != null) {
-                        result = (T) bitmap;
-                    }
-                }
-            } else {
-                String jsonString = new String(response.data,
-                        HttpHeaderParser.parseCharset(response.headers, VolleyConstants.DEFAULT_CHARSET));
-
-                if (String.class.equals(resultClass) || Object.class.equals(resultClass)) { //Object.class 默认返回String
-                    result = (T) jsonString;
-                } else if (JSONObject.class.equals(resultClass)) {
-                    JSONObject jsonObject = JSON.parseObject(jsonString);
-                    if (jsonObject != null) {
-                        result = (T) jsonObject;
-                    }
-                } else {
-                    result = JSON.parseObject(jsonString, resultClass);
-                }
-            }
-
+            T result = ResponseUtils.parseNetworkResponse(response, resultClass);
             if (result != null) {
                 return Response.success(new VolleyResult<T>(response, result),
                         HttpHeaderParser.parseCacheHeaders(response));
@@ -109,6 +65,8 @@ public class VolleyRequest<T> extends BasicRequest<T> {
             return Response.error(new ParseError(response));
         } catch (UnsupportedEncodingException e) {
             return Response.error(new ParseError(e));
+        } catch (OutOfMemoryError oom) {
+            return Response.error(new ParseError(oom));
         } catch (Exception je) {
             return Response.error(new ParseError(je));
         }

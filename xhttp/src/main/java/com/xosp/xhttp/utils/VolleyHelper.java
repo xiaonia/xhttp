@@ -50,20 +50,6 @@ public class VolleyHelper {
         return "POST";
     }
 
-    public static List<Header> convertHeaders(Map<String, List<String>> responseHeaders) {
-        List<Header> headerList = new ArrayList<Header>(responseHeaders.size());
-        for (Map.Entry<String, List<String>> entry : responseHeaders.entrySet()) {
-            // HttpUrlConnection includes the status line as a header with a null key; omit it here
-            // since it's not really a header and the rest of Volley assumes non-null keys.
-            if (entry.getKey() != null) {
-                for (String value : entry.getValue()) {
-                    headerList.add(new Header(entry.getKey(), value));
-                }
-            }
-        }
-        return headerList;
-    }
-
     public static String buildHttpUrl(String url, Map<String, String> params, String encoding) {
         if (url == null) {
             url = "";
@@ -96,7 +82,9 @@ public class VolleyHelper {
         return sb.toString();
     }
 
-    public static String buildHttpQuery(Map<String, String> map, String joiner, String encoding) throws UnsupportedEncodingException {
+    public static String buildHttpQuery(Map<String, String> map, String joiner, String encoding)
+            throws UnsupportedEncodingException {
+
         if (joiner == null) {
             joiner = "";
         }
