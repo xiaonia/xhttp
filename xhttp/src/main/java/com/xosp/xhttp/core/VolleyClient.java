@@ -69,6 +69,7 @@ public class VolleyClient {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public <T> void getForm(Object tag, String url, Map<String, String> headers, Map<String, String> params,
                         VolleyCallback<T> callback) {
         Request<T> request = new GetFormBuilder<T>()

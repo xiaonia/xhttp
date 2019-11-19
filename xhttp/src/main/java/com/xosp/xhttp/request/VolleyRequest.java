@@ -169,7 +169,8 @@ public class VolleyRequest<T> extends Request<VolleyResult<T>> {
     @Nullable
     public Class<T> getResultClass() {
         if (mReturnType == null && mCallback != null) {
-            mReturnType = GenericClassHelper.getGenericClass(mCallback, VolleyCallback.class);
+            mReturnType = GenericClassHelper
+                    .getGenericClass(mCallback, VolleyCallback.class);
         }
         return mReturnType;
     }
